@@ -1,0 +1,37 @@
+version: '3.9'
+
+services:
+  mongodb:
+    image: mongo:7
+    ports:
+      - '27017:27017'
+    volumes:
+      - mongo-data:/data/db
+    environment:
+      MONGO_INITDB_DATABASE: seo-command-center
+
+  redis:
+    image: redis:7-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-data:/data
+
+  # Uncomment below to run API + Web via Docker
+  # api:
+  #   build: ./apps/api
+  #   ports:
+  #     - '4000:4000'
+  #   depends_on: [mongodb, redis]
+  #   env_file: .env
+  #
+  # web:
+  #   build: ./apps/web
+  #   ports:
+  #     - '3000:3000'
+  #   depends_on: [api]
+  #   env_file: .env
+
+volumes:
+  mongo-data:
+  redis-data:
