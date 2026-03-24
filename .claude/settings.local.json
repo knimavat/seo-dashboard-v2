@@ -3,7 +3,10 @@
     "allow": [
       "Bash(xargs ls:*)",
       "Bash(grep -r \"composite\\\\|references\" /c/APP-local/SEO/apps/*/tsconfig.json)",
-      "Bash(find /c/APP-local/SEO/apps -type d -not -path */node_modules/* -not -path */.next/* -not -path */dist/*)"
+      "Bash(find /c/APP-local/SEO/apps -type d -not -path */node_modules/* -not -path */.next/* -not -path */dist/*)",
+      "Bash(npx tsc:*)",
+      "Bash(ls C:/APP-local/SEO/apps/web/lib/server/*.ts)",
+      "Bash(ls C:/APP-local/SEO/apps/web/lib/server/models/*.ts)"
     ]
   }
 }
