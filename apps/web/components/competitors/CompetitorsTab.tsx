@@ -42,7 +42,7 @@ export function CompetitorsTab({ projectId }: { projectId: string }) {
   };
 
   // Collect all months across all competitors
-  const allMonths = [...new Set(competitors.flatMap((c: any) => c.snapshots?.map((s: any) => s.month) || []))].sort().reverse();
+  const allMonths = [...new Set<string>(competitors.flatMap((c: any) => (c.snapshots?.map((s: any) => s.month) || []) as string[]))].sort().reverse();
 
   const handleDelete = async (id: string) => {
     if (!confirm('Remove this competitor?')) return;

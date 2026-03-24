@@ -12,5 +12,12 @@
     "declarationMap": true,
     "sourceMap": true
   },
-  "exclude": ["node_modules", "dist", ".next", "apps", "packages"]
+  "files": [],
+  "references": [
+    { "path": "apps/web" },
+    { "path": "apps/api" },
+    { "path": "apps/worker" },
+    { "path": "packages/shared-types" },
+    { "path": "packages/validation" }
+  ]
 }

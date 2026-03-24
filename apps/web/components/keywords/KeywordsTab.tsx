@@ -35,7 +35,7 @@ export function KeywordsTab({ projectId }: { projectId: string }) {
   const keywords = data?.data || [];
   const summary = data?.summary;
 
-  const groups = [...new Set(keywords.map((k: any) => k.group).filter(Boolean))];
+  const groups = [...new Set<string>(keywords.map((k: any) => k.group).filter((g: unknown): g is string => typeof g === 'string'))];
   const hasFilters = tier || group || intent || search;
 
   return (
