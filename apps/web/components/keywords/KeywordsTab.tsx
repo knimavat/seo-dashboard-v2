@@ -208,7 +208,7 @@ function SnapshotModal({ open, onClose, pid, keywords, done }: { open: boolean; 
 
   return (
     <Modal open={open} onClose={() => { onClose(); setRanks({}); }} title="Update Rankings" size="xl">
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4"><p className="text-xs text-blue-700">Current values become "previous". Your new values become "current". This creates a trend point.</p></div>
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 mb-4"><p className="text-xs text-blue-700">Current values become &ldquo;previous&rdquo;. Your new values become &ldquo;current&rdquo;. This creates a trend point.</p></div>
       <div className="flex justify-end mb-2"><Button size="sm" variant="ghost" onClick={() => setPaste(!paste)}>{paste ? 'Manual Entry' : 'Paste from Sheet'}</Button></div>
       {paste ? <>
         <textarea value={pasteText} onChange={e => setPasteText(e.target.value)} rows={6} className="w-full border rounded-lg px-3 py-2 text-xs font-mono" placeholder="keyword  rank  volume  difficulty" />
