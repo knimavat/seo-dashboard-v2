@@ -79,22 +79,51 @@ export function ReportsTab({ projectId }: { projectId: string }) {
   );
 }
 
+const REPORT_SECTIONS = [
+  { key: 'analytics', label: 'Analytics', description: 'Traffic, conversions, and performance metrics' },
+  { key: 'keywords', label: 'Keywords', description: 'Keyword rankings and tracking data' },
+  { key: 'tasks', label: 'Tasks', description: 'SEO task progress and status' },
+  { key: 'audits', label: 'Audits', description: 'Technical SEO audit findings' },
+  { key: 'approvals', label: 'Approvals', description: 'Client approval requests and decisions' },
+  { key: 'reviews', label: 'Reviews', description: 'Review management and responses' },
+  { key: 'competitors', label: 'Competitors', description: 'Competitor analysis and comparison data' },
+  { key: 'scope', label: 'Scope of Work', description: 'Monthly deliverables and activity plan (hours excluded)' },
+] as const;
+
+type SectionKey = typeof REPORT_SECTIONS[number]['key'];
+
 function CreateReportModal({ open, onClose, projectId, onSuccess }: { open: boolean; onClose: () => void; projectId: string; onSuccess: () => void }) {
   const [form, setForm] = useState({ name: '', password: '' });
+  const [sections, setSections] = useState<Record<SectionKey, boolean>>({
+    analytics: true, keywords: true, tasks: true, audits: true, approvals: true, reviews: true, competitors: true, scope: true,
+  });
   const [loading, setLoading] = useState(false);
 
+  const toggleSection = (key: SectionKey) => setSections(s => ({ ...s, [key]: !s[key] }));
+  const allSelected = REPORT_SECTIONS.every(s => sections[s.key]);
+  const toggleAll = () => {
+    const next = !allSelected;
+    setSections(Object.fromEntries(REPORT_SECTIONS.map(s => [s.key, next])) as Record<SectionKey, boolean>);
+  };
+
   const handleSubmit = async () => {
+    if (!REPORT_SECTIONS.some(s => sections[s.key])) {
+      alert('Please select at least one section to include in the report.');
+      return;
+    }
     setLoading(true);
     try {
       const result = await api.generateReport(projectId, {
         name: form.name || undefined,
         password: form.password || undefined,
+        sectionVisibility: sections,
       });
 
       const url = `${window.location.origin}${result.data?.publicUrl}`;
       await navigator.clipboard.writeText(url).catch(() => {});
       alert(`Report link created!\n\n${url}\n\n(Copied to clipboard)`);
       setForm({ name: '', password: '' });
+      setSections({ analytics: true, keywords: true, tasks: true, audits: true, approvals: true, reviews: true, competitors: true, scope: true });
       onSuccess();
       onClose();
     } catch (err: any) { alert(err.message); }
@@ -106,7 +135,7 @@ function CreateReportModal({ open, onClose, projectId, onSuccess }: { open: bool
       <div className="space-y-4">
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
           <p className="text-xs text-blue-700">
-            This creates a shareable link that shows <strong>live project data</strong>. Clients can pick date ranges to compare analytics, view keyword rankings, task progress, and competitor analysis — all in real-time.
+            This creates a shareable link that shows <strong>live project data</strong>. Choose which sections the client can see in the report.
           </p>
         </div>
 
@@ -115,6 +144,32 @@ function CreateReportModal({ open, onClose, projectId, onSuccess }: { open: bool
         <div>
           <Input label="Password Protection (optional)" type="password" value={form.password} onChange={v => setForm(f => ({ ...f, password: v }))} placeholder="Leave blank for no password" />
           <p className="text-[10px] text-gray-400 mt-1">If set, viewers must enter this password before seeing the report.</p>
+        </div>
+
+        {/* Section Visibility */}
+        <div>
+          <div className="flex items-center justify-between mb-2">
+            <label className="text-sm font-medium text-gray-700">Report Sections</label>
+            <button onClick={toggleAll} className="text-xs text-brand-600 hover:text-brand-700 font-medium">
+              {allSelected ? 'Deselect All' : 'Select All'}
+            </button>
+          </div>
+          <div className="bg-gray-50 rounded-lg border border-gray-200 divide-y divide-gray-200">
+            {REPORT_SECTIONS.map(s => (
+              <label key={s.key} className="flex items-center gap-3 px-3 py-2.5 cursor-pointer hover:bg-gray-100/50">
+                <input
+                  type="checkbox"
+                  checked={sections[s.key]}
+                  onChange={() => toggleSection(s.key)}
+                  className="rounded border-gray-300 text-brand-600 focus:ring-brand-500"
+                />
+                <div className="flex-1 min-w-0">
+                  <span className="text-sm font-medium text-gray-900">{s.label}</span>
+                  <p className="text-[10px] text-gray-400">{s.description}</p>
+                </div>
+              </label>
+            ))}
+          </div>
         </div>
       </div>
 

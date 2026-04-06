@@ -38,6 +38,11 @@ export const updateProjectSchema = z.object({
     accentColor: z.string().regex(/^#[0-9a-fA-F]{6}$/).optional(),
     logoUrl: z.string().url().optional(),
   }).optional(),
+  settings: z.object({
+    engagementDuration: z.number().int().min(1).max(36).optional(),
+    goals: z.array(z.string().max(500)).max(10).optional(),
+    planNotes: z.string().max(5000).optional(),
+  }).optional(),
 });
 
 // ─── Task ──────────────────────────────────────────

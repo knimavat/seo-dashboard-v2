@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
 import { cn } from '@/lib/utils';
 
-const API = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:4000/api/v1';
+const API = process.env.NEXT_PUBLIC_API_URL || '/api/v1';
 
 function fN(n: number): string { if (!n && n !== 0) return '—'; if (Math.abs(n) >= 1e6) return (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M'; if (Math.abs(n) >= 1e3) return (n / 1e3).toFixed(1).replace(/\.0$/, '') + 'K'; return n.toLocaleString(); }
 function fDiff(n: number): string { return (n > 0 ? '+' : '') + fN(n); }
@@ -90,6 +90,7 @@ export default function PublicReportPage({ params }: { params: { token: string }
   const tasks = data?.tasks;
   const audits = data?.audits;
   const comp = data?.competitors;
+  const scopeD = data?.scope;
   const hl = data?.highlights;
   const hasCompare = !!a?.compare;
 
@@ -377,6 +378,10 @@ export default function PublicReportPage({ params }: { params: { token: string }
             <div className="grid grid-cols-5 gap-2">{Object.entries(audits.summary).map(([k,v]) => <div key={k} className="bg-white rounded-lg border p-2.5 text-center"><p className={cn('text-base font-bold',k==='critical'?'text-red-600':k==='resolved'?'text-green-600':'text-gray-900')}>{v as number}</p><p className="text-[9px] text-gray-500 uppercase">{k}</p></div>)}</div>
           </section>
         )}
+        {/* Scope of Work */}
+        {vis?.scope && scopeD?.months?.length > 0 && (
+          <ScopeSection months={scopeD.months} ac={ac} pc={pc} />
+        )}
       </main>
 
       <footer className="max-w-6xl mx-auto px-6 py-6 text-center border-t mt-6"><p className="text-[10px] text-gray-400">SEO Command Center · {branding?.clientName}</p></footer>
@@ -442,6 +447,51 @@ function LChart({t,data,lines}:{t:string;data:any[];lines:Array<{k:string;l:stri
       </svg>
       <div className="flex justify-center gap-3 mt-1">{lines.map(l=><div key={l.k} className="flex items-center gap-1"><div className="w-2.5 h-[2px] rounded" style={{backgroundColor:l.c}}/><span className="text-[9px] text-gray-500">{l.l}</span></div>)}</div>
     </div>
+  );
+}
+
+function ScopeSection({ months, ac, pc }: { months: any[]; ac: string; pc: string }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <section>
+      <button onClick={() => setExpanded(!expanded)} className="flex items-center gap-2 mb-3 mt-1 w-full text-left group">
+        <span>📋</span>
+        <div className="w-1 h-5 rounded-full" style={{ backgroundColor: ac }} />
+        <h2 className="text-base font-bold text-gray-900 flex-1">Scope of Work</h2>
+        <span className="text-xs text-gray-400 group-hover:text-gray-600 print:hidden">{expanded ? '▲ Collapse' : '▼ Expand'}</span>
+      </button>
+      {!expanded && (
+        <p className="text-xs text-gray-400 mb-2">Click to view the monthly deliverables included in your SEO package.</p>
+      )}
+      {expanded && months.map((m: any) => (
+        <div key={m.month} className="mb-5">
+          <p className="text-xs font-semibold text-gray-500 uppercase mb-2">{ml(m.month)}</p>
+          <div className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <table className="w-full text-sm">
+              <thead>
+                <tr className="bg-gray-50 border-b border-gray-200">
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase">Activity</th>
+                  <th className="text-right px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase">Quantity</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase">Unit</th>
+                  <th className="text-left px-4 py-2.5 text-xs font-semibold text-gray-500 uppercase">Notes</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-100">
+                {(m.scopeItems || []).filter((s: any) => s.quantity > 0).map((s: any) => (
+                  <tr key={s.activity}>
+                    <td className="px-4 py-2 font-medium text-gray-900">{s.label}</td>
+                    <td className="px-4 py-2 text-right font-semibold" style={{ color: pc }}>{s.quantity}</td>
+                    <td className="px-4 py-2 text-gray-500 text-xs">{s.unit || '—'}</td>
+                    <td className="px-4 py-2 text-gray-400 text-xs">{s.notes || '—'}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      ))}
+      {expanded && <p className="text-[10px] text-gray-300 italic mt-1">Scope of deliverables only. Team hours allocation is maintained internally.</p>}
+    </section>
   );
 }
 

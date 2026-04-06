@@ -19,6 +19,7 @@ export default function LoginPage() {
         await login(response.credential);
         router.push('/dashboard/projects');
       } catch (err: any) {
+        console.error('Login error:', err);
         alert(err.message || 'Login failed');
       }
     };

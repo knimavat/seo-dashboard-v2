@@ -13,7 +13,7 @@ export interface IProject extends Document {
   healthStatus: string;
   healthNote?: string;
   branding?: { primaryColor?: string; accentColor?: string; logoUrl?: string };
-  settings?: { defaultReportSections?: string[]; keywordGroups?: string[]; taskCategories?: string[] };
+  settings?: { defaultReportSections?: string[]; keywordGroups?: string[]; taskCategories?: string[]; engagementDuration?: number; goals?: string[]; planNotes?: string };
   metadata: { totalKeywords: number; totalTasks: number; openAuditIssues: number; lastReportDate?: Date };
   deletedAt?: Date;
   createdAt: Date;
@@ -34,7 +34,7 @@ const projectSchema = new Schema<IProject>(
     healthStatus: { type: String, enum: ['green', 'yellow', 'red'], default: 'green' },
     healthNote: String,
     branding: { primaryColor: String, accentColor: String, logoUrl: String },
-    settings: { defaultReportSections: [String], keywordGroups: [String], taskCategories: [String] },
+    settings: { defaultReportSections: [String], keywordGroups: [String], taskCategories: [String], engagementDuration: Number, goals: [String], planNotes: String },
     metadata: {
       totalKeywords: { type: Number, default: 0 },
       totalTasks: { type: Number, default: 0 },

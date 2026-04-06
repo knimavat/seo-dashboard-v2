@@ -79,6 +79,7 @@ class ApiClient {
   async getApprovals(projectId: string, params?: Record<string, string>) { const qs = params ? '?' + new URLSearchParams(params).toString() : ''; return this.request<any>(`/projects/${projectId}/approvals${qs}`); }
   async createApproval(projectId: string, data: any) { return this.request<any>(`/projects/${projectId}/approvals`, { method: 'POST', body: JSON.stringify(data) }); }
   async decideApproval(projectId: string, approvalId: string, data: any) { return this.request<any>(`/projects/${projectId}/approvals/${approvalId}/decide`, { method: 'PATCH', body: JSON.stringify(data) }); }
+  async deleteApproval(projectId: string, approvalId: string) { return this.request<any>(`/projects/${projectId}/approvals/${approvalId}`, { method: 'DELETE' }); }
 
   // Reviews
   async getReviews(projectId: string, params?: Record<string, string>) { const qs = params ? '?' + new URLSearchParams(params).toString() : ''; return this.request<any>(`/projects/${projectId}/reviews${qs}`); }
@@ -101,6 +102,17 @@ class ApiClient {
   async addCompetitorSnapshot(projectId: string, competitorId: string, data: any) { return this.request<any>(`/projects/${projectId}/competitors/${competitorId}/snapshot`, { method: 'POST', body: JSON.stringify(data) }); }
   async bulkCompetitorSnapshot(projectId: string, data: any) { return this.request<any>(`/projects/${projectId}/competitors/bulk-snapshot`, { method: 'POST', body: JSON.stringify(data) }); }
   async deleteCompetitor(projectId: string, competitorId: string) { return this.request<any>(`/projects/${projectId}/competitors/${competitorId}`, { method: 'DELETE' }); }
+
+  // Scope
+  async getScope(projectId: string) { return this.request<any>(`/projects/${projectId}/scope`); }
+  async saveScope(projectId: string, data: any) { return this.request<any>(`/projects/${projectId}/scope`, { method: 'POST', body: JSON.stringify(data) }); }
+  async renameScopeMonth(projectId: string, month: string, newMonth: string) { return this.request<any>(`/projects/${projectId}/scope/${month}`, { method: 'PATCH', body: JSON.stringify({ newMonth }) }); }
+  async deleteScopeMonth(projectId: string, month: string) { return this.request<any>(`/projects/${projectId}/scope/${month}`, { method: 'DELETE' }); }
+
+  // Users (agency-level)
+  async getAgencyUsers() { return this.request<any>('/projects/agency/users'); }
+  async addUser(data: any) { return this.request<any>('/projects/agency/users', { method: 'POST', body: JSON.stringify(data) }); }
+  async updateUser(userId: string, data: any) { return this.request<any>(`/projects/agency/users/${userId}`, { method: 'PATCH', body: JSON.stringify(data) }); }
 
   // Dashboard
   async getPortfolio() { return this.request<any>('/dashboard/portfolio'); }

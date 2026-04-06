@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
-  MONGODB_URI: z.string().url(),
-  REDIS_URL: z.string().url().optional(),
-  JWT_SECRET: z.string().min(32),
-  JWT_REFRESH_SECRET: z.string().min(32),
+  MONGODB_URI: z.string().min(1),
+  REDIS_URL: z.string().min(1).optional(),
+  JWT_SECRET: z.string().min(1),
+  JWT_REFRESH_SECRET: z.string().min(1),
   JWT_EXPIRY: z.string().default('24h'),
   JWT_REFRESH_EXPIRY: z.string().default('30d'),
   GOOGLE_CLIENT_ID: z.string(),

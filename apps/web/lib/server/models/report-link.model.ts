@@ -10,7 +10,7 @@ export interface IReportLink extends Document {
   branding: { clientName: string; clientLogo?: string; primaryColor: string; accentColor: string };
   defaultStartDate?: Date;
   defaultEndDate?: Date;
-  sectionVisibility: { analytics: boolean; keywords: boolean; tasks: boolean; audits: boolean; competitors: boolean };
+  sectionVisibility: { analytics: boolean; keywords: boolean; tasks: boolean; audits: boolean; approvals: boolean; reviews: boolean; competitors: boolean; scope: boolean };
   createdBy: mongoose.Types.ObjectId;
   revokedAt?: Date;
   viewCount: number;
@@ -40,7 +40,10 @@ const reportLinkSchema = new Schema<IReportLink>(
       keywords: { type: Boolean, default: true },
       tasks: { type: Boolean, default: true },
       audits: { type: Boolean, default: true },
+      approvals: { type: Boolean, default: true },
+      reviews: { type: Boolean, default: true },
       competitors: { type: Boolean, default: true },
+      scope: { type: Boolean, default: true },
     },
     createdBy: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     revokedAt: Date,

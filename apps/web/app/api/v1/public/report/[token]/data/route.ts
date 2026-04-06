@@ -9,8 +9,11 @@ import ProjectModel from '@/lib/server/models/project.model';
 import TaskModel from '@/lib/server/models/task.model';
 import KeywordModel from '@/lib/server/models/keyword.model';
 import AuditIssueModel from '@/lib/server/models/audit.model';
+import ApprovalModel from '@/lib/server/models/approval.model';
+import ReviewModel from '@/lib/server/models/review.model';
 import AnalyticsModel from '@/lib/server/models/analytics.model';
 import CompetitorModel from '@/lib/server/models/competitor.model';
+import ScopeModel from '@/lib/server/models/scope.model';
 
 function fmt(n: number): string { if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M'; if (n >= 1e3) return (n / 1e3).toFixed(1) + 'K'; return n.toLocaleString(); }
 
@@ -116,6 +119,25 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
       auditsData = { summary: { critical: open.filter(a => a.severity === 'critical').length, high: open.filter(a => a.severity === 'high').length, medium: open.filter(a => a.severity === 'medium').length, low: open.filter(a => a.severity === 'low').length, resolved: as2.filter(a => ['fixed', 'verified'].includes(a.status)).length } };
     }
 
+    let approvalsData = null;
+    if (link.sectionVisibility.approvals) {
+      const approvals = await ApprovalModel.find({ agencyId, projectId }).populate('taskId', 'title').populate('submittedBy', 'name').lean();
+      approvalsData = {
+        summary: { total: approvals.length, pending: approvals.filter(a => a.status === 'pending').length, approved: approvals.filter(a => a.status === 'approved').length, rejected: approvals.filter(a => a.status === 'rejected').length, revisionRequested: approvals.filter(a => a.status === 'revision_requested').length },
+        items: approvals.slice(0, 20).map(a => ({ task: (a.taskId as any)?.title || 'Task', type: a.type, status: a.status, submittedBy: (a.submittedBy as any)?.name || '—', submittedAt: a.submittedAt })),
+      };
+    }
+
+    let reviewsData = null;
+    if (link.sectionVisibility.reviews) {
+      const reviews = await ReviewModel.find({ agencyId, projectId }).populate('taskId', 'title').populate('reviewerId', 'name').lean();
+      const ratings = reviews.map(r => r.rating);
+      reviewsData = {
+        summary: { total: reviews.length, pass: ratings.filter(r => r === 'pass').length, passWithNotes: ratings.filter(r => r === 'pass_with_notes').length, needsRevision: ratings.filter(r => r === 'needs_revision').length, fail: ratings.filter(r => r === 'fail').length },
+        items: reviews.slice(0, 20).map(r => ({ task: (r.taskId as any)?.title || 'Task', type: r.type, rating: r.rating, reviewer: (r.reviewerId as any)?.name || '—', reviewedAt: r.reviewedAt, feedback: r.feedback })),
+      };
+    }
+
     let competitorsData = null;
     if (link.sectionVisibility.competitors) {
       const comps = await CompetitorModel.find({ agencyId, projectId, deletedAt: null }).lean();
@@ -141,13 +163,34 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ toke
       };
     }
 
+    let scopeData = null;
+    if (link.sectionVisibility.scope) {
+      const scope = await ScopeModel.findOne({ agencyId, projectId, deletedAt: null }).lean();
+      if (scope?.months?.length) {
+        scopeData = {
+          months: scope.months
+            .sort((a: any, b: any) => a.month.localeCompare(b.month))
+            .map((m: any) => ({
+              month: m.month,
+              scopeItems: (m.scopeItems || []).map((s: any) => ({
+                activity: s.activity,
+                label: s.label,
+                quantity: s.quantity,
+                unit: s.unit,
+                notes: s.notes,
+              })),
+            })),
+        };
+      }
+    }
+
     return NextResponse.json({
       success: true,
       data: {
         project: { name: project.projectName, client: project.clientName, domain: project.domain, healthStatus: project.healthStatus, healthNote: project.healthNote },
         highlights, selectedMonth: currentMonth?.month || null, compareMonth: compareMonth?.month || null,
         analytics: { current: currentData, compare: compareData, changes, trend: trendData.map(a => ({ month: a.month, clicks: a.clicks, impressions: a.impressions, organicTraffic: a.organicTraffic, totalUsers: a.totalUsers, newUsers: a.newUsers, returningUsers: a.returningUsers, activeUsers: a.activeUsers, pageViews: a.pageViews })) },
-        keywords: keywordsData, tasks: tasksData, audits: auditsData, competitors: competitorsData,
+        keywords: keywordsData, tasks: tasksData, audits: auditsData, approvals: approvalsData, reviews: reviewsData, competitors: competitorsData, scope: scopeData,
       },
     });
   } catch (error) {

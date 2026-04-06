@@ -41,7 +41,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ pro
       },
       defaultStartDate: defaultStartDate ? new Date(defaultStartDate) : undefined,
       defaultEndDate: defaultEndDate ? new Date(defaultEndDate) : undefined,
-      sectionVisibility: sectionVisibility || { analytics: true, keywords: true, tasks: true, audits: true, competitors: true },
+      sectionVisibility: sectionVisibility || { analytics: true, keywords: true, tasks: true, audits: true, competitors: true, approvals: true, reviews: true, scope: true },
       createdBy: user.sub,
     });
 

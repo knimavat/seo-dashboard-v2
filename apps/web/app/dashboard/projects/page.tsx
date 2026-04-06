@@ -2,10 +2,11 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { useProjects, useCreateProject } from '@/hooks/useApi';
+import { useProjects } from '@/hooks/useApi';
 import { useAuthStore } from '@/lib/auth-store';
-import { PageHeader, Button, StatusBadge, EmptyState, Select, Input, Modal, Skeleton } from '@/components/ui';
-import { formatDate, getHealthColor, cn } from '@/lib/utils';
+import { PageHeader, Button, StatusBadge, EmptyState, Select, Input, Skeleton } from '@/components/ui';
+import { CreateProjectWizard } from '@/components/projects/CreateProjectWizard';
+import { formatDate, cn } from '@/lib/utils';
 
 export default function ProjectsPage() {
   const { user } = useAuthStore();
@@ -133,43 +134,8 @@ export default function ProjectsPage() {
         </div>
       )}
 
-      {/* Create Project Modal */}
-      <CreateProjectModal open={showCreate} onClose={() => setShowCreate(false)} />
+      {/* Create Project Wizard */}
+      <CreateProjectWizard open={showCreate} onClose={() => setShowCreate(false)} />
     </>
-  );
-}
-
-function CreateProjectModal({ open, onClose }: { open: boolean; onClose: () => void }) {
-  const [form, setForm] = useState({ clientName: '', projectName: '', domain: '', industry: '', startDate: '' });
-  const create = useCreateProject();
-
-  const handleSubmit = async () => {
-    try {
-      await create.mutateAsync(form);
-      setForm({ clientName: '', projectName: '', domain: '', industry: '', startDate: '' });
-      onClose();
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
-
-  return (
-    <Modal open={open} onClose={onClose} title="Create New Project" size="md">
-      <div className="space-y-4">
-        <Input label="Client Name" value={form.clientName} onChange={(v) => setForm({ ...form, clientName: v })} required placeholder="Acme Corp" />
-        <Input label="Project Name" value={form.projectName} onChange={(v) => setForm({ ...form, projectName: v })} required placeholder="Acme SEO Campaign" />
-        <Input label="Domain" value={form.domain} onChange={(v) => setForm({ ...form, domain: v })} required placeholder="https://acme.com" />
-        <div className="grid grid-cols-2 gap-4">
-          <Input label="Industry" value={form.industry} onChange={(v) => setForm({ ...form, industry: v })} placeholder="SaaS, E-commerce, etc." />
-          <Input label="Start Date" type="date" value={form.startDate} onChange={(v) => setForm({ ...form, startDate: v })} required />
-        </div>
-      </div>
-      <div className="flex justify-end gap-3 mt-6 pt-4 border-t border-gray-200">
-        <Button variant="secondary" onClick={onClose}>Cancel</Button>
-        <Button onClick={handleSubmit} loading={create.isPending} disabled={!form.clientName || !form.projectName || !form.domain}>
-          Create Project
-        </Button>
-      </div>
-    </Modal>
   );
 }

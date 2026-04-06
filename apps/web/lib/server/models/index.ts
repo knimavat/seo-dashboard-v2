@@ -9,3 +9,4 @@ export { default as ReviewModel } from './review.model';
 export { default as ReportLinkModel } from './report-link.model';
 export { default as AnalyticsModel } from './analytics.model';
 export { default as CompetitorModel } from './competitor.model';
+export { default as ScopeModel } from './scope.model';
