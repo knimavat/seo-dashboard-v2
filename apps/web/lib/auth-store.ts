@@ -7,7 +7,7 @@ interface AuthUser {
   email: string;
   name: string;
   avatarUrl?: string;
-  role: 'admin' | 'specialist';
+  role: 'owner' | 'admin' | 'specialist';
   assignedProjects?: string[];
 }
 

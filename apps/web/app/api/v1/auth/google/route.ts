@@ -42,12 +42,23 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ success: false, error: 'access_denied', message: 'Your email is not on the allowlist. Contact your agency admin.' }, { status: 403 });
     }
 
-    user.lastLoginAt = new Date();
-    if (picture && !user.avatarUrl) user.avatarUrl = picture;
-    if (name && user.name !== name) user.name = name;
-    await user.save();
+    // Auto-promote to owner if no owner exists in the agency
+    let effectiveRole = user.role;
+    if (user.role !== 'owner' && user.role === 'admin') {
+      const ownerExists = await UserModel.exists({ agencyId: user.agencyId, role: 'owner', status: 'active' });
+      if (!ownerExists) {
+        effectiveRole = 'owner';
+      }
+    }
 
-    const jwtPayload: JwtPayload = { sub: user._id.toString(), aid: user.agencyId.toString(), role: user.role, email: user.email };
+    // Use updateOne to bypass any stale cached Mongoose enum validation
+    const updates: Record<string, any> = { lastLoginAt: new Date() };
+    if (effectiveRole !== user.role) updates.role = effectiveRole;
+    if (picture && !user.avatarUrl) updates.avatarUrl = picture;
+    if (name && user.name !== name) updates.name = name;
+    await UserModel.updateOne({ _id: user._id }, { $set: updates });
+
+    const jwtPayload: JwtPayload = { sub: user._id.toString(), aid: user.agencyId.toString(), role: effectiveRole as JwtPayload['role'], email: user.email };
     const { accessToken, refreshToken } = generateTokens(jwtPayload);
 
     const cookieOpts = {
@@ -61,7 +72,7 @@ export async function POST(req: NextRequest) {
     const response = NextResponse.json({
       success: true,
       data: {
-        user: { _id: user._id, email: user.email, name: user.name, avatarUrl: user.avatarUrl, role: user.role },
+        user: { _id: user._id, email: user.email, name: updates.name || user.name, avatarUrl: updates.avatarUrl || user.avatarUrl, role: effectiveRole },
         agency: agency ? { _id: agency._id, name: agency.name, slug: agency.slug } : null,
         token: accessToken,
       },

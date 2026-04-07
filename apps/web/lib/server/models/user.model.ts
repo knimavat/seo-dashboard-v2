@@ -5,7 +5,7 @@ export interface IUser extends Document {
   email: string;
   name: string;
   avatarUrl?: string;
-  role: 'admin' | 'specialist';
+  role: 'owner' | 'admin' | 'specialist';
   assignedProjects: mongoose.Types.ObjectId[];
   status: 'active' | 'deactivated';
   lastLoginAt?: Date;
@@ -19,7 +19,7 @@ const userSchema = new Schema<IUser>(
     email: { type: String, required: true, lowercase: true },
     name: { type: String, required: true },
     avatarUrl: String,
-    role: { type: String, enum: ['admin', 'specialist'], default: 'specialist' },
+    role: { type: String, enum: ['owner', 'admin', 'specialist'], default: 'specialist' },
     assignedProjects: [{ type: Schema.Types.ObjectId, ref: 'Project' }],
     status: { type: String, enum: ['active', 'deactivated'], default: 'active' },
     lastLoginAt: Date,

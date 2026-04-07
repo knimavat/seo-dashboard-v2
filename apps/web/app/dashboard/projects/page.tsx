@@ -27,7 +27,7 @@ export default function ProjectsPage() {
         title="Projects"
         subtitle={`${projects.length || 0} project${projects.length !== 1 ? 's' : ''}`}
         actions={
-          user?.role === 'admin' && (
+          (user?.role === 'admin' || user?.role === 'owner') && (
             <Button onClick={() => setShowCreate(true)}>
               <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
                 <path strokeLinecap="round" strokeLinejoin="round" d="M12 4v16m8-8H4" />
@@ -82,7 +82,7 @@ export default function ProjectsPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
             </svg>
           }
-          action={user?.role === 'admin' && <Button onClick={() => setShowCreate(true)}>Create Project</Button>}
+          action={(user?.role === 'admin' || user?.role === 'owner') && <Button onClick={() => setShowCreate(true)}>Create Project</Button>}
         />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">

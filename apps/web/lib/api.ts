@@ -113,6 +113,8 @@ class ApiClient {
   async getAgencyUsers() { return this.request<any>('/projects/agency/users'); }
   async addUser(data: any) { return this.request<any>('/projects/agency/users', { method: 'POST', body: JSON.stringify(data) }); }
   async updateUser(userId: string, data: any) { return this.request<any>(`/projects/agency/users/${userId}`, { method: 'PATCH', body: JSON.stringify(data) }); }
+  async deleteUser(userId: string) { return this.request<any>(`/projects/agency/users/${userId}`, { method: 'DELETE' }); }
+  async transferOwnership(targetUserId: string) { return this.request<any>('/projects/agency/users/transfer-ownership', { method: 'POST', body: JSON.stringify({ targetUserId }) }); }
 
   // Dashboard
   async getPortfolio() { return this.request<any>('/dashboard/portfolio'); }

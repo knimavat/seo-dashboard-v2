@@ -45,7 +45,7 @@ export default function UsersPage() {
 
   const stats = useMemo(() => ({
     total: users.length,
-    admins: users.filter((u: any) => u.role === 'admin').length,
+    admins: users.filter((u: any) => u.role === 'admin' || u.role === 'owner').length,
     specialists: users.filter((u: any) => u.role === 'specialist').length,
     active: users.filter((u: any) => u.status === 'active').length,
   }), [users]);
@@ -101,6 +101,7 @@ export default function UsersPage() {
           className="px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none"
         >
           <option value="">All Roles</option>
+          <option value="owner">Owner</option>
           <option value="admin">Admin</option>
           <option value="specialist">Specialist</option>
         </select>
@@ -163,7 +164,7 @@ export default function UsersPage() {
                     <td className="px-4 py-3">
                       <span className={cn(
                         'inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium',
-                        u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                        u.role === 'owner' ? 'bg-amber-100 text-amber-700' : u.role === 'admin' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
                       )}>
                         {u.role}
                       </span>

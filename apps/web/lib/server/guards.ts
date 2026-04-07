@@ -9,14 +9,22 @@ export function requireTenant(user: JwtPayload): string {
   return user.aid;
 }
 
+// Role hierarchy: owner inherits all admin permissions
+const ROLE_HIERARCHY: Record<string, string[]> = {
+  owner: ['owner', 'admin', 'specialist'],
+  admin: ['admin', 'specialist'],
+  specialist: ['specialist'],
+};
+
 export function requireRole(user: JwtPayload, ...roles: string[]): void {
-  if (!roles.includes(user.role)) throw AppError.forbidden('Insufficient permissions');
+  const effectiveRoles = ROLE_HIERARCHY[user.role] || [user.role];
+  if (!roles.some(r => effectiveRoles.includes(r))) throw AppError.forbidden('Insufficient permissions');
 }
 
 const userProjectCache = new Map<string, { projects: string[]; expires: number }>();
 
 export async function requireProjectAccess(user: JwtPayload, agencyId: string, projectId: string): Promise<void> {
-  if (user.role === 'admin') return;
+  if (user.role === 'admin' || user.role === 'owner') return;
 
   const userId = user.sub;
   const cached = userProjectCache.get(userId);

@@ -32,14 +32,14 @@ export function ReportsTab({ projectId }: { projectId: string }) {
           <p className="text-sm text-gray-500">{reports.length} report link{reports.length !== 1 ? 's' : ''}</p>
           <p className="text-[10px] text-gray-400 mt-0.5">Reports are live — data updates automatically when you add new analytics, keywords, or tasks.</p>
         </div>
-        {user?.role === 'admin' && <Button onClick={() => setShowCreate(true)}>Create Report Link</Button>}
+        {(user?.role === 'admin' || user?.role === 'owner') && <Button onClick={() => setShowCreate(true)}>Create Report Link</Button>}
       </div>
 
       {isLoading ? <TableSkeleton /> : reports.length === 0 ? (
         <EmptyState
           title="No report links"
           description="Create a shareable report link for your client. Reports show live data — no need to regenerate."
-          action={user?.role === 'admin' && <Button onClick={() => setShowCreate(true)}>Create Report Link</Button>}
+          action={(user?.role === 'admin' || user?.role === 'owner') && <Button onClick={() => setShowCreate(true)}>Create Report Link</Button>}
         />
       ) : (
         <div className="space-y-3">

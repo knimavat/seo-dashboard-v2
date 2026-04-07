@@ -8,7 +8,7 @@ import { AppError } from './errors';
 export interface JwtPayload {
   sub: string;
   aid: string;
-  role: 'admin' | 'specialist';
+  role: 'owner' | 'admin' | 'specialist';
   email: string;
 }
 

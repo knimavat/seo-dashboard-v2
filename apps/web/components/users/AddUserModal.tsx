@@ -7,7 +7,7 @@ import { useAddUser, useProjects } from '@/hooks/useApi';
 export function AddUserModal({ open, onClose }: { open: boolean; onClose: () => void }) {
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
-  const [role, setRole] = useState<'admin' | 'specialist'>('specialist');
+  const [role, setRole] = useState<'owner' | 'admin' | 'specialist'>('specialist');
   const [selectedProjects, setSelectedProjects] = useState<string[]>([]);
 
   const { data: projectsData } = useProjects();
@@ -64,11 +64,12 @@ export function AddUserModal({ open, onClose }: { open: boolean; onClose: () => 
           <label className="block text-xs font-medium text-gray-500 mb-1">Role</label>
           <select
             value={role}
-            onChange={(e) => setRole(e.target.value as 'admin' | 'specialist')}
+            onChange={(e) => setRole(e.target.value as 'owner' | 'admin' | 'specialist')}
             className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-brand-500 focus:border-brand-500 outline-none bg-white"
           >
             <option value="specialist">Specialist</option>
             <option value="admin">Admin</option>
+            <option value="owner">Owner</option>
           </select>
         </div>
 

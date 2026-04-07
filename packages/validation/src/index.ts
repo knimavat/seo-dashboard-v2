@@ -187,12 +187,12 @@ export const generateReportSchema = z.object({
 export const addUserSchema = z.object({
   email: z.string().email(),
   name: z.string().min(1).max(200),
-  role: z.enum(['admin', 'specialist']),
+  role: z.enum(['owner', 'admin', 'specialist']),
   assignedProjects: z.array(objectIdSchema).default([]),
 });
 
 export const updateUserSchema = z.object({
-  role: z.enum(['admin', 'specialist']).optional(),
+  role: z.enum(['owner', 'admin', 'specialist']).optional(),
   assignedProjects: z.array(objectIdSchema).optional(),
   status: z.enum(['active', 'deactivated']).optional(),
 });

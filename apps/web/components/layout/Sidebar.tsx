@@ -52,7 +52,7 @@ export function Sidebar() {
   const { user, agency, logout } = useAuthStore();
 
   const filteredItems = navItems.filter((item) => {
-    if (item.adminOnly && user?.role !== 'admin') return false;
+    if (item.adminOnly && user?.role !== 'admin' && user?.role !== 'owner') return false;
     return true;
   });
 

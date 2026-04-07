@@ -60,6 +60,8 @@ export function useGenerateReport(pid: string) { const qc = useQueryClient(); re
 export function useUsers() { return useQuery({ queryKey: keys.users.all, queryFn: () => api.getAgencyUsers() }); }
 export function useAddUser() { const qc = useQueryClient(); return useMutation({ mutationFn: (d: any) => api.addUser(d), onSuccess: () => qc.invalidateQueries({ queryKey: keys.users.all }) }); }
 export function useUpdateUser() { const qc = useQueryClient(); return useMutation({ mutationFn: ({ userId, data }: { userId: string; data: any }) => api.updateUser(userId, data), onSuccess: () => qc.invalidateQueries({ queryKey: keys.users.all }) }); }
+export function useDeleteUser() { const qc = useQueryClient(); return useMutation({ mutationFn: (userId: string) => api.deleteUser(userId), onSuccess: () => qc.invalidateQueries({ queryKey: keys.users.all }) }); }
+export function useTransferOwnership() { const qc = useQueryClient(); return useMutation({ mutationFn: (targetUserId: string) => api.transferOwnership(targetUserId), onSuccess: () => qc.invalidateQueries({ queryKey: keys.users.all }) }); }
 
 // ─── Dashboard ──
 export function useProjectDashboard(pid: string, p?: Record<string, string>) { return useQuery({ queryKey: keys.dashboard.project(pid, p), queryFn: () => api.getProjectDashboard(pid, p), enabled: !!pid }); }
